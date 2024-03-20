@@ -1,36 +1,34 @@
+import { CreateTaskDto } from './dto/tasks.dto';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Task } from './task.entity';
+import { TaskRepository } from './task.repository';
 
 @Injectable()
 export class TasksService {
-  ///////////////////////  Before using Repository (Database) in memory   ///////////////////////
-  // private tasks: Task[] = [];
-  // async getAllTasks(): Promise<Task[]> {
-  //   return this.tasks;
-  // }
-  // async createTask(createTask: CreateTaskDto): Promise<Task> {
-  //   const { title, description } = createTask;
-  //   const task: Task = {
-  //     id: uuid(),
-  //     title,
-  //     description,
-  //     state: TaskState.OPEN,
-  //   };
-  //   this.tasks.push(task);
-  //   return task;
-  // }
-  // async getTaskById(id: string): Promise<Task> {
-  //   return this.tasks.find((task) => task.id === id);
-  // }
-  // async deleteTask(id: string): Promise<boolean> {
-  //   const task = this.getTaskById(id);
-  //   if (!task) return false;
-  //   this.tasks = this.tasks.filter((task) => task.id !== id);
-  //   return true;
-  // }
-  // async updateTaskState(id: string, state: TaskState): Promise<boolean> {
-  //   const task = await this.getTaskById(id);
-  //   if (!task) return false;
-  //   task.state = state;
-  //   return true;
-  // }
+  constructor(
+    @InjectRepository(TaskRepository)
+    private taskRepository: TaskRepository,
+  ) {}
+
+  async getAllTasks() {
+    return await this.taskRepository.find();
+  }
+
+  async getTaskById(id: number): Promise<Task> {
+    const found = await this.taskRepository.findOne({ where: { id } });
+    if (!found) {
+      throw new Error('Task not found');
+    }
+    return found;
+  }
+
+  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+    const { title, description } = createTaskDto;
+    const task = new Task();
+    task.title = title;
+    task.description = description;
+    await this.taskRepository.save(task);
+    return task;
+  }
 }

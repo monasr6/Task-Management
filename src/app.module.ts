@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common';
 import { typeormConfig } from './config/typeorm.config';
 
 @Module({
-  imports: [TasksModule, TypeOrmModule.forRoot(typeormConfig)],
+  imports: [TypeOrmModule.forRoot(typeormConfig), TasksModule],
   controllers: [],
   providers: [],
 })

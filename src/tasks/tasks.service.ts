@@ -2,17 +2,20 @@ import { CreateTaskDto } from './dto/tasks.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './task.entity';
-import { TaskRepository } from './task.repository';
+// import { TaskRepository } from './task.repository';
+import { EntityManager, Repository } from 'typeorm';
+import { TaskState } from './task-status.enum';
 
 @Injectable()
 export class TasksService {
   constructor(
-    @InjectRepository(TaskRepository)
-    private taskRepository: TaskRepository,
+    @InjectRepository(Task)
+    private readonly taskRepository: Repository<Task>,
+    private readonly entityManager: EntityManager,
   ) {}
 
   async getAllTasks() {
-    return await this.taskRepository.find();
+    return await this.entityManager.find({ type: Task, name: 'Task' });
   }
 
   async getTaskById(id: number): Promise<Task> {
@@ -28,6 +31,7 @@ export class TasksService {
     const task = new Task();
     task.title = title;
     task.description = description;
+    task.state = TaskState.OPEN;
     await this.taskRepository.save(task);
     return task;
   }

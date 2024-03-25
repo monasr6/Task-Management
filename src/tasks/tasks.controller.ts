@@ -2,6 +2,7 @@
 https://docs.nestjs.com/controllers#controllers
 */
 import { CreateTaskDto } from './dto/tasks.dto';
+import { TaskState } from './task-status.enum';
 import { Task } from './task.entity';
 import { TasksService } from './tasks.service';
 import {
@@ -11,6 +12,8 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Delete,
+  Patch,
 } from '@nestjs/common';
 
 @Controller('tasks')
@@ -31,13 +34,16 @@ export class TasksController {
   async createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
     return await this.tasksService.createTask(createTaskDto);
   }
-  // @Delete('/:id')
-  // async deleteTask(@Param('id') id: string): Promise<boolean> {
-  //   return await this.tasksService.deleteTask(id);
-  // }
+  @Delete('/:id')
+  async deleteTask(@Param('id', ParseIntPipe) id: number): Promise<boolean> {
+    return await this.tasksService.deleteTask(id);
+  }
 
-  // @Patch('/:id/state')
-  // async updateTask(@Param('id') id: string, @Body() state: TaskState) {
-  //   return await this.tasksService.updateTaskState(id, state);
-  // }
+  @Patch('/:id/state')
+  async updateTask(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() state: TaskState,
+  ) {
+    return await this.tasksService.updateTaskState(id, state);
+  }
 }

@@ -12,6 +12,6 @@ export class CreateTaskDto {
 }
 
 export interface UpdateTaskDto {
-  id: string;
+  id: number;
   state: TaskState;
 }

@@ -32,7 +32,19 @@ export class TasksService {
     task.title = title;
     task.description = description;
     task.state = TaskState.OPEN;
-    await this.taskRepository.save(task);
+    await task.save();
+    return task;
+  }
+  async deleteTask(id: number): Promise<boolean> {
+    const task = await this.getTaskById(id);
+    const result = await task.remove();
+    return result ? true : false;
+  }
+
+  async updateTaskState(id: number, state: TaskState) {
+    const task = await this.getTaskById(id);
+    task.state = state;
+    await task.save();
     return task;
   }
 }

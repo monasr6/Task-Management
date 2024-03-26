@@ -3,9 +3,9 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 export const typeormConfig: TypeOrmModuleOptions = {
   type: 'postgres',
   host: 'localhost',
-  port: 5433,
+  port: 5434,
   username: 'postgres',
-  password: 'ctrl123',
+  password: 'example',
   database: 'taskmanagement',
   entities: [__dirname + '/../**/*.entity.{js,ts}'],
   synchronize: true,

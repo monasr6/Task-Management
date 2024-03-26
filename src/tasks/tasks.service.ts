@@ -33,6 +33,7 @@ export class TasksService {
     task.description = description;
     task.state = TaskState.OPEN;
     await task.save();
+    console.log(typeof task);
     return task;
   }
   async deleteTask(id: number): Promise<boolean> {

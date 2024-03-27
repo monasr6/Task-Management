@@ -1,26 +1,53 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './dto/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(
+    @InjectRepository(User)
+    private readonly authRepository: Repository<User>,
+    private readonly jwtService: JwtService,
+  ) {}
+  async signup(createAuthDto: CreateAuthDto): Promise<void> {
+    const { username, password } = createAuthDto;
+    const salt: string = await bcrypt.genSalt();
+    const auth: User = new User();
+    auth.username = username;
+    auth.salt = salt;
+    auth.password = await this.hashPassword(password, salt);
+    try {
+      await this.authRepository.save(auth);
+    } catch (err) {
+      throw new Error(err);
+    }
+    // return this.authRepository.signup(createAuthDto);
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async hashPassword(password: string, salt: string): Promise<string> {
+    return bcrypt.hash(password, salt);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
+  async signin(createAuthDto: CreateAuthDto): Promise<{ accessToken: string }> {
+    const { username, password } = createAuthDto;
+    const user: User | undefined = await this.authRepository.findOne({
+      where: { username },
+    });
+    if (user && (await user.validatePassword(password))) {
+      const payload: JwtPayload = { username };
+      const accessToken: string = this.jwtService.sign(payload);
+      return { accessToken };
+    } else {
+      throw new Error('Invalid credentials');
+    }
   }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  findAll(): Promise<User[]> {
+    return this.authRepository.find();
   }
 }

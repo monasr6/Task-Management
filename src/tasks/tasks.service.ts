@@ -1,5 +1,5 @@
 import { CreateTaskDto } from './dto/tasks.dto';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './task.entity';
 import { TaskState } from './task-status.enum';
@@ -11,6 +11,7 @@ export class TasksService {
   constructor(
     @InjectRepository(Task)
     private readonly taskRepository: Repository<Task>,
+    private logger = new Logger('TasksService'),
   ) {}
 
   async getAllTasks(user: User): Promise<Task[]> {
@@ -41,14 +42,23 @@ export class TasksService {
   async deleteTask(id: number, user: User): Promise<boolean> {
     const task = await this.getTaskById(id, user);
     if (!task) throw new UnauthorizedException('Task not found');
-    const result = await task.remove();
-    return result ? true : false;
+    try {
+      const result = await task.remove();
+      return result ? true : false;
+    } catch (err) {
+      this.logger.error('Error deleting task', err.stack);
+      return false;
+    }
   }
 
   async updateTaskState(id: number, state: TaskState, user: User) {
     const task = await this.getTaskById(id, user);
     task.state = state;
-    await task.save();
+    try {
+      await task.save();
+    } catch (err) {
+      this.logger.error('Error updating task state', err.stack);
+    }
     return task;
   }
 }

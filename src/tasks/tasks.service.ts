@@ -8,14 +8,14 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class TasksService {
+  private logger = new Logger('TasksService');
   constructor(
     @InjectRepository(Task)
     private readonly taskRepository: Repository<Task>,
-    private logger = new Logger('TasksService'),
   ) {}
 
   async getAllTasks(user: User): Promise<Task[]> {
-    return await this.taskRepository.find({ where: { user } });
+    return await this.taskRepository.find({ where: { userId: user.id } });
   }
 
   async getTaskById(id: number, user: User): Promise<Task> {

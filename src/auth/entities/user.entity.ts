@@ -1,5 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Task } from 'src/tasks/task.entity';
 
 @Entity()
 @Unique(['username'])
@@ -20,4 +27,7 @@ export class User {
     const hash = await bcrypt.hash(password, this.salt);
     return this.password === hash;
   }
+
+  @OneToMany(() => Task, (task) => task.user, { eager: false })
+  tasks: Task[];
 }

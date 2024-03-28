@@ -17,36 +17,47 @@ import {
   Patch,
   UseGuards,
 } from '@nestjs/common';
-
+import { GetUser } from 'src/auth/get-user.decorator';
+import { User } from 'src/auth/entities/user.entity';
 @Controller('tasks')
 @UseGuards(AuthGuard())
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  async getAllTasks() {
-    return await this.tasksService.getAllTasks();
+  async getAllTasks(@GetUser() user: User): Promise<Task[]> {
+    return await this.tasksService.getAllTasks(user);
   }
 
   @Get('/:id')
-  async getTaskById(@Param('id', ParseIntPipe) id: number): Promise<Task> {
-    return await this.tasksService.getTaskById(id);
+  async getTaskById(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ): Promise<Task> {
+    return await this.tasksService.getTaskById(id, user);
   }
 
   @Post()
-  async createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    return await this.tasksService.createTask(createTaskDto);
+  async createTask(
+    @Body() createTaskDto: CreateTaskDto,
+    @GetUser() user: User,
+  ): Promise<Task> {
+    return await this.tasksService.createTask(createTaskDto, user);
   }
   @Delete('/:id')
-  async deleteTask(@Param('id', ParseIntPipe) id: number): Promise<boolean> {
-    return await this.tasksService.deleteTask(id);
+  async deleteTask(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ): Promise<boolean> {
+    return await this.tasksService.deleteTask(id, user);
   }
 
   @Patch('/:id/state')
   async updateTask(
     @Param('id', ParseIntPipe) id: number,
     @Body() state: TaskState,
+    @GetUser() user: User,
   ) {
-    return await this.tasksService.updateTaskState(id, state);
+    return await this.tasksService.updateTaskState(id, state, user);
   }
 }

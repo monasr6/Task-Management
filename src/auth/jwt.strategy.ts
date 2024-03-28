@@ -1,7 +1,7 @@
 import { JwtPayload } from './dto/jwt-payload.interface';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -21,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const { username } = payload;
     const user = this.authRepository.findOne({ where: { username } });
     if (!user) {
-      throw new Error('Unauthorized');
+      throw new UnauthorizedException('Unauthorizedd');
     }
     return user;
   }

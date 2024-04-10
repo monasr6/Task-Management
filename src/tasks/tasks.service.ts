@@ -5,6 +5,7 @@ import { Task } from './task.entity';
 import { TaskState } from './task-status.enum';
 import { User } from 'src/auth/entities/user.entity';
 import { Repository } from 'typeorm';
+import { QueryFilterDto } from './dto/queryFilter.dto';
 
 @Injectable()
 export class TasksService {
@@ -14,7 +15,7 @@ export class TasksService {
     private readonly taskRepository: Repository<Task>,
   ) {}
 
-  async getAllTasks(user: User): Promise<Task[]> {
+  async getAllTasks(filterDto: QueryFilterDto, user: User): Promise<Task[]> {
     return await this.taskRepository.find({ where: { userId: user.id } });
   }
 

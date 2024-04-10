@@ -16,17 +16,23 @@ import {
   Delete,
   Patch,
   UseGuards,
+  Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { User } from 'src/auth/entities/user.entity';
+import { QueryFilterDto } from './dto/queryFilter.dto';
 @Controller('tasks')
 @UseGuards(AuthGuard())
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  async getAllTasks(@GetUser() user: User): Promise<Task[]> {
-    return await this.tasksService.getAllTasks(user);
+  async getAllTasks(
+    @GetUser() user: User,
+    @Query(ValidationPipe) filterDto: QueryFilterDto,
+  ): Promise<Task[]> {
+    return await this.tasksService.getAllTasks(filterDto, user);
   }
 
   @Get('/:id')

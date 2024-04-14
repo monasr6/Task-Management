@@ -7,13 +7,15 @@ import { Module } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Task } from './task.entity';
-import { AuthModule } from 'src/auth/auth.module';
 import { User } from 'src/auth/entities/user.entity';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
-  imports: [AuthModule, TypeOrmModule.forFeature([Task, User])],
+  imports: [
+    TypeOrmModule.forFeature([Task, User]),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+  ],
   controllers: [TasksController],
   providers: [TasksService],
-  exports: [TypeOrmModule, Task],
 })
 export class TasksModule {}

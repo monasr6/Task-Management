@@ -31,20 +31,29 @@ export class TasksService {
 
   async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
     const { title, description } = createTaskDto;
-    const task = new Task();
-    task.title = title;
-    task.description = description;
-    task.state = TaskState.OPEN;
-    task.user = user;
-    await task.save();
-    task.user = undefined;
+
+    const task = this.taskRepository.create({
+      title,
+      description,
+      state: TaskState.OPEN,
+      user,
+    });
+    const result = await this.taskRepository.save(task);
+
+    if (!result) {
+      this.logger.error('Error creating task');
+      throw new UnauthorizedException('Error creating task');
+    }
+
+    delete task.user;
     return task;
   }
+
   async deleteTask(id: number, user: User): Promise<boolean> {
     const task = await this.getTaskById(id, user);
     if (!task) throw new UnauthorizedException('Task not found');
     try {
-      const result = await task.remove();
+      const result = await this.taskRepository.delete({ id, userId: user.id });
       return result ? true : false;
     } catch (err) {
       this.logger.error('Error deleting task', err.stack);

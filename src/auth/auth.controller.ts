@@ -17,7 +17,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  signUp(@Body(ValidationPipe) createAuthDto: CreateAuthDto): Promise<void> {
+  signUp(@Body(ValidationPipe) createAuthDto: CreateAuthDto): Promise<User> {
     return this.authService.signup(createAuthDto);
   }
 

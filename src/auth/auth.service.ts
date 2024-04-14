@@ -14,19 +14,24 @@ export class AuthService {
     private readonly authRepository: Repository<User>,
     private readonly jwtService: JwtService,
   ) {}
-  async signup(createAuthDto: CreateAuthDto): Promise<void> {
+  async signup(createAuthDto: CreateAuthDto): Promise<User> {
     const { username, password } = createAuthDto;
+
     const salt: string = await bcrypt.genSalt();
-    const auth: User = new User();
-    auth.username = username;
-    auth.salt = salt;
-    auth.password = await this.hashPassword(password, salt);
+    const user: User = new User();
+    user.username = username;
+    user.salt = salt;
+    user.password = await this.hashPassword(password, salt);
+
     try {
-      await this.authRepository.save(auth);
+      await this.authRepository.save(user);
+
+      delete user.salt;
+      delete user.password;
+      return user;
     } catch (err) {
       throw new Error(err);
     }
-    // return this.authRepository.signup(createAuthDto);
   }
 
   async hashPassword(password: string, salt: string): Promise<string> {

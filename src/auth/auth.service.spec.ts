@@ -23,7 +23,7 @@ describe('YourService', () => {
             findOne: jest.fn().mockResolvedValue({
               id: 1,
               username: 'Test User',
-              validatePassword: () => jest.fn().mockResolvedValue(true),
+              validatePassword: jest.fn().mockResolvedValue(true),
             }),
           }),
         },
@@ -44,6 +44,7 @@ describe('YourService', () => {
   it('should be defined', () => {
     expect(authService).toBeDefined();
   });
+
   describe('signup test', () => {
     it('should create a user', async () => {
       authRepository.save = jest.fn().mockResolvedValue(mockUser);
@@ -77,6 +78,21 @@ describe('YourService', () => {
       await expect(authService.signin(mockUser)).rejects.toThrow(
         'Invalid credentials',
       );
+    });
+  });
+
+  describe('findAll test', () => {
+    it('should return an array of users', async () => {
+      authRepository.find = jest.fn().mockResolvedValue([mockUser]);
+      const res = await authService.findAll();
+      expect(res).toEqual([mockUser]);
+    });
+  });
+
+  describe('hashPassword test', () => {
+    it('should return a hashed password', async () => {
+      const res = await authService.hashPassword('password', 'salt');
+      expect(res).toEqual('hashed_password');
     });
   });
 });

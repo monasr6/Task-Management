@@ -55,4 +55,6 @@ export class AuthService {
   findAll(): Promise<User[]> {
     return this.authRepository.find();
   }
+
+  updatePhoto() {}
 }

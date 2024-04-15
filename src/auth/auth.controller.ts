@@ -33,6 +33,12 @@ export class AuthController {
     return this.authService.signin(createAuthDto);
   }
 
+  @Post('updatePhoto')
+  @UseGuards(AuthGuard)
+  updatePhoto() {
+    this.authService.updatePhoto();
+  }
+
   @Post('test')
   @UseGuards(AuthGuard())
   test(@GetUser() user: User) {

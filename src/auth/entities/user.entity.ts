@@ -23,11 +23,14 @@ export class User {
   @Column({ default: false })
   salt: string;
 
+  @Column({ default: 'defualt.jpg' })
+  photo: string;
+
+  @OneToMany(() => Task, (task) => task.user, { eager: false })
+  tasks: Task[];
+
   async validatePassword(password: string): Promise<boolean> {
     const hash = await bcrypt.hash(password, this.salt);
     return this.password === hash;
   }
-
-  @OneToMany(() => Task, (task) => task.user, { eager: false })
-  tasks: Task[];
 }

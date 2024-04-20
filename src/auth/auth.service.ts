@@ -6,6 +6,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './dto/jwt-payload.interface';
+import { randomBytes } from 'crypto';
+import * as path from 'path';
+import { writeFile } from 'fs/promises';
 
 @Injectable()
 export class AuthService {
@@ -56,5 +59,23 @@ export class AuthService {
     return this.authRepository.find();
   }
 
-  updatePhoto() {}
+  async updatePhoto(user: User, file: Express.Multer.File) {
+    // save file to disk
+    const filePath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'uploads',
+      'images',
+      'avatar-' + randomBytes(8).toString('hex') + '.jpg',
+    );
+    try {
+      await writeFile(filePath, file.buffer);
+      user.photo = filePath;
+      await this.authRepository.save(user);
+      return user.photo;
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
 }

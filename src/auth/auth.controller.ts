@@ -5,14 +5,19 @@ import {
   Body,
   ValidationPipe,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from './get-user.decorator';
 import { User } from './entities/user.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('auth')
+@ApiTags('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -34,9 +39,13 @@ export class AuthController {
   }
 
   @Post('updatePhoto')
-  @UseGuards(AuthGuard)
-  updatePhoto() {
-    this.authService.updatePhoto();
+  @UseGuards(AuthGuard())
+  @UseInterceptors(FileInterceptor('file'))
+  updatePhoto(
+    @UploadedFile() file: Express.Multer.File,
+    @GetUser() user: User,
+  ): Promise<string> {
+    return this.authService.updatePhoto(user, file);
   }
 
   @Post('test')

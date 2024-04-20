@@ -4,9 +4,13 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtService } from '@nestjs/jwt';
+import * as fs from 'fs';
 
 describe('YourService', () => {
-  const mockUser = { username: 'Test User' } as User;
+  const mockUser = {
+    username: 'Test User',
+    photo: 'test.jpg',
+  } as User;
 
   let authService: AuthService;
   let authRepository;
@@ -93,6 +97,20 @@ describe('YourService', () => {
     it('should return a hashed password', async () => {
       const res = await authService.hashPassword('password', 'salt');
       expect(res).toEqual('hashed_password');
+    });
+  });
+  describe('updatePhoto test', () => {
+    it('should update user photo', async () => {
+      const file = {
+        buffer: Buffer.from('test'),
+      } as Express.Multer.File;
+      const filePath = 'test.jpg';
+      jest.spyOn(fs, 'writeFile').mockImplementation((path, data, callback) => {
+        callback(null);
+      });
+      authRepository.save = jest.fn().mockResolvedValue(mockUser);
+      const res = await authService.updatePhoto(mockUser, file);
+      expect(res).toEqual(filePath);
     });
   });
 });

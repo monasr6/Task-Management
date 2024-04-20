@@ -22,8 +22,10 @@ import {
 import { GetUser } from '../auth/get-user.decorator';
 import { User } from '../auth/entities/user.entity';
 import { QueryFilterDto } from './dto/queryFilter.dto';
+import { ApiTags } from '@nestjs/swagger';
 @Controller('tasks')
 @UseGuards(AuthGuard())
+@ApiTags('tasks')
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 

@@ -21,7 +21,6 @@ async function bootstrap() {
     .setTitle('Cats example')
     .setDescription('The cats API description')
     .setVersion('1.0')
-    .addTag('cats')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
@@ -30,5 +29,6 @@ async function bootstrap() {
   console.log(port);
   await app.listen(port);
   logger.log(`Application listening on port ${port}`);
+  logger.log(`Swagger is running on http://localhost:${port}/api`);
 }
 bootstrap();

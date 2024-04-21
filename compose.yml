@@ -10,6 +10,7 @@ services:
     depends_on:
       - postgres
     environment:
+      DB_HOST: postgres
       DATABASE_URL: postgres://postgres:example@postgres:5432/example
 
   
@@ -18,11 +19,11 @@ services:
     restart: always
     shm_size: 128mb
     environment:
-      POSTGRES_PASSWORD: example
+      POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: taskmanagement
     ports:
-      - 5434:5432
+      - 3004:5432
     volumes:
       - postgres:/var/lib/postgresql/data
 

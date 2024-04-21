@@ -7,9 +7,11 @@ COPY ./package.json .
 
 RUN yarn install
 
+RUN yarn add bcrypt --force
+
 COPY . .
 
-CMD ["yarn", "start"]
+CMD ["yarn", "run" , "start"]
 
 EXPOSE 3003
-EXPOSE 5434
+EXPOSE 3004

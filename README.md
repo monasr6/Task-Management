@@ -44,11 +44,55 @@ Key features include:
 
 To get started with the application, follow the installation and running instructions below.
 
+## Configuration
+
+Create a `default.yml` file in the `config` directory with the following content:
+
+```yaml
+db:
+  type: postgres
+  host: ${DB_HOST} # Use 'localhost' for local development and 'postgres' for Docker
+  port: 5432
+  username: postgres
+  password: postgres
+  database: taskmanagement
+  synchronize: true
+jwt :
+  secret : secret
+  expiresIn : 3600
+server :
+  port: 3003
 
 ## Installation
 
 ```bash
 $ yarn install
+```
+
+If you're running the application locally, you can set the `DB_HOST` environment variable to `localhost` in your `.env` file:
+
+```bash
+DB_HOST=localhost
+```
+This section explains how to create the default.yml configuration file and how to set the DB_HOST environment variable for local development and Docker. It also includes examples of the default.yml, .env, and docker-compose.yml files.
+
+## Running the app in Docker
+
+To run the application in Docker, you can use the `docker-compose.yml` file:
+
+```bash
+docker-compose up --build
+```
+
+This command builds the Docker images and starts the Docker containers as defined in the `docker-compose.yml` file.
+
+If you're running the application in Docker, you should set the `DB_HOST` environment variable to `postgres` in your `docker-compose.yml` file:
+
+```yaml
+services:
+  app:
+    environment:
+      DB_HOST: postgres
 ```
 
 ## Running the app

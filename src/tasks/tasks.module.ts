@@ -7,7 +7,7 @@ import { Module } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Task } from './task.entity';
-import { User } from 'src/auth/entities/user.entity';
+import { User } from '../auth/entities/user.entity';
 import { PassportModule } from '@nestjs/passport';
 
 @Module({
